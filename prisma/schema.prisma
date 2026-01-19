@@ -1,0 +1,106 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          String    @default("operator")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+  messages      Message[]
+  files         VaultFile[]
+  documents     Document[]
+  transactions  Transaction[]
+  aiChats       AiChat[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  customer    String
+  address     String
+  phone       String
+  items       String
+  total       Float
+  status      String   @default("pending")
+  priority    String   @default("normal")
+  courier     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  chatId      String
+  chatName    String
+  content     String
+  sender      String
+  isOutgoing  Boolean  @default(false)
+  platform    String   @default("telegram")
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model VaultFile {
+  id              String   @id @default(cuid())
+  name            String
+  type            String
+  size            Int
+  cloudStoragePath String
+  isPublic        Boolean  @default(false)
+  encrypted       Boolean  @default(true)
+  folder          String   @default("root")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String   @default("general")
+  tags        String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        String
+  amount      Float
+  currency    String   @default("DASH")
+  address     String?
+  txHash      String?
+  status      String   @default("pending")
+  description String?
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model AiChat {
+  id          String   @id @default(cuid())
+  role        String
+  content     String
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}

@@ -1,0 +1,597 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #E85D04;
+  --accent-light: #FF7A1A;
+  --bg-primary: #0D0D0D;
+  --bg-secondary: #161616;
+  --bg-tertiary: #1A1A1A;
+  --bg-elevated: #222222;
+  
+  /* Текст */
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  
+  /* Границы и состояния */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --focus-ring: rgba(232, 93, 4, 0.5);
+  
+  /* Тени с глубиной */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 8px 24px rgba(232, 93, 4, 0.35);
+  
+  /* Анимации */
+  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-hydration-error] {
+  display: none !important;
+}
+
+/* Liquid Glass Sidebar - Apple Music Style */
+.sidebar {
+  background: rgba(30, 30, 32, 0.8);
+  backdrop-filter: blur(80px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(80px) saturate(150%) brightness(0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  height: 100%;
+  width: 260px;
+  overflow-y: auto;
+  overflow-x: visible;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Liquid Glass shimmer effect */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Active indicator line - animated like Apple Music */
+.sidebar-indicator {
+  position: absolute;
+  left: 0;
+  width: 3px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(232, 93, 4, 0.4);
+  transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  z-index: 10;
+}
+
+.sidebar.collapsed {
+  width: 72px !important;
+}
+
+.sidebar.collapsed .sidebar-label,
+.sidebar.collapsed .sidebar-section-title,
+.sidebar.collapsed .search-wrapper,
+.sidebar.collapsed .user-name,
+.sidebar.collapsed .logo-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sidebar-section {
+  padding: 0 8px;
+  margin-bottom: 2px;
+}
+
+.sidebar-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 20px 12px 8px;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(1.02);
+}
+
+.sidebar-item:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-item.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-item.active .sidebar-icon {
+  color: var(--text-primary);
+}
+
+.sidebar-item.active .sidebar-label {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Draggable item styles */
+.sidebar-item.dragging {
+  opacity: 0.5;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-item.drag-over {
+  border-top: 2px solid var(--accent);
+}
+
+.sidebar-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 20px;
+}
+
+.sidebar-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+/* Search Input */
+.search-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px 8px 34px;
+  font-size: 13px;
+  color: var(--text-primary);
+  width: 100%;
+  transition: background 0.15s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Cards - Glassmorphism Style */
+.content-card {
+  background: rgba(30, 30, 32, 0.75);
+  backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: all 0.25s var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.content-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.module-card {
+  background: rgba(30, 30, 32, 0.75);
+  backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px;
+  transition: all 0.25s var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.module-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Buttons - Modern Clean Style */
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-secondary:active {
+  opacity: 0.9;
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+/* Status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-pending { background: rgba(255, 214, 10, 0.12); color: #FFD60A; }
+.badge-processing { background: rgba(100, 181, 246, 0.12); color: #64B5F6; }
+.badge-delivering { background: rgba(206, 147, 216, 0.12); color: #CE93D8; }
+.badge-completed { background: rgba(129, 199, 132, 0.12); color: #81C784; }
+.badge-cancelled { background: rgba(229, 115, 115, 0.12); color: #E57373; }
+
+/* Input styling */
+input, textarea, select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Table styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+}
+
+.data-table tbody tr {
+  transition: background 0.1s ease;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Page header */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Section headers */
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+/* Stat card - Glassmorphism */
+.stat-card {
+  background: rgba(30, 30, 32, 0.75);
+  backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.25s var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Chat styles */
+.chat-message {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.chat-message.sent {
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.received {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+/* File/Document cards - Glassmorphism */
+.file-card {
+  background: rgba(30, 30, 32, 0.75);
+  backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 18px;
+  transition: all 0.2s var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.file-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main content area - тёмно-серый как у Apple Music */
+.main-content {
+  background: transparent;
+}
+
+/* Collapse toggle button */
+.collapse-toggle {
+  position: absolute;
+  right: 8px;
+  top: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.collapse-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+/* Когда сайдбар свёрнут - кнопка по центру */
+.sidebar.collapsed .collapse-toggle {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APPLE MUSIC BLUR EFFECTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Gaussian Blur Background - для размытого фона от обложки */
+.blur-background {
+  filter: blur(60px) saturate(150%);
+  transform: scale(1.2);
+  opacity: 0.6;
+}
+
+/* Album Art Shadow - тень за обложкой альбома */
+.album-art-shadow {
+  filter: blur(80px) brightness(0.4) saturate(150%);
+  transform: scale(1.1) translateY(20px);
+  opacity: 0.6;
+  position: absolute;
+  z-index: -1;
+}
+
+/* Liquid Glass - для элементов управления */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Liquid Glass Dark - для тёмных элементов */
+.liquid-glass-dark {
+  background: rgba(30, 30, 32, 0.8);
+  backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  -webkit-backdrop-filter: blur(60px) saturate(150%) brightness(0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Vibrancy Effect - увеличивает контраст и насыщенность */
+.vibrancy {
+  filter: contrast(110%) saturate(130%);
+}
+
+/* Glow Effect - свечение вокруг элемента */
+.glow-accent {
+  box-shadow: 
+    0 0 40px rgba(232, 93, 4, 0.4),
+    0 0 80px rgba(232, 93, 4, 0.2);
+}
+
+/* Glow Effect - динамический (для обложек альбомов) */
+.glow-dynamic {
+  box-shadow: 
+    0 0 40px var(--glow-color, rgba(255, 255, 255, 0.3)),
+    0 0 80px var(--glow-color, rgba(255, 255, 255, 0.15));
+}
+
+/* Frosted Glass - матовое стекло для контролов */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Frosted Glass Dark */
+.frosted-glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
