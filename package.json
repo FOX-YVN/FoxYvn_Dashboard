@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "prisma": {
-    "seed": "tsx --require dotenv/config scripts/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r dotenv/config scripts/seed.ts"
   },
   "devDependencies": {
     "@next/swc-wasm-nodejs": "13.5.1",

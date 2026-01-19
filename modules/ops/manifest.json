@@ -1,0 +1,12 @@
+{
+  "name": "ops",
+  "displayName": "Операции",
+  "description": "Управление заказами и операциями",
+  "icon": "package",
+  "route": "/modules/ops",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 1,
+  "dependencies": [],
+  "permissions": ["ops:read", "ops:write"]
+}

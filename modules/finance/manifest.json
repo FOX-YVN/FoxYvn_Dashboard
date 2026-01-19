@@ -1,0 +1,12 @@
+{
+  "name": "finance",
+  "displayName": "Финансы",
+  "description": "Доходы, расходы и финансовая аналитика",
+  "icon": "wallet",
+  "route": "/modules/finance",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 4,
+  "dependencies": [],
+  "permissions": ["finance:read", "finance:write"]
+}

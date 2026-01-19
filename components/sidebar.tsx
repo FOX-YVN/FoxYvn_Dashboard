@@ -16,18 +16,15 @@ import {
   LogOut,
   User,
   Settings,
-  Package,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
+import { PluginNav } from '@/components/plugin-nav';
 
 // Базовые пункты меню (заводское состояние)
 const mainItems = [
   { id: 'dashboard', label: 'Главная', icon: Home, href: '/dashboard' },
   { id: 'comms', label: 'Сообщения', icon: MessageCircle, href: '/comms' },
 ];
-
-// TODO: Модули будут загружаться из lib/modules.ts
-const installedModules: Array<{ id: string; label: string; icon: typeof Package; href: string }> = [];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -170,35 +167,7 @@ export function Sidebar() {
           
           {(modulesOpen || collapsed) && (
             <nav className="sidebar-section">
-              {installedModules.length === 0 ? (
-                // Пустое состояние
-                !collapsed && (
-                  <div className="px-4 py-6 text-center">
-                    <Package size={32} className="mx-auto text-white/20 mb-2" />
-                    <p className="text-[12px] text-white/40">Нет установленных модулей</p>
-                    <button className="mt-2 text-[12px] text-accent hover:text-accent-light transition-colors">
-                      + Добавить модуль
-                    </button>
-                  </div>
-                )
-              ) : (
-                // Список установленных модулей
-                installedModules.map((module) => {
-                  const isActive = pathname === module.href || pathname?.startsWith(module.href + '/');
-                  const Icon = module.icon;
-                  return (
-                    <Link
-                      key={module.id}
-                      href={module.href}
-                      className={`sidebar-item ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-0' : ''}`}
-                      title={collapsed ? module.label : undefined}
-                    >
-                      <Icon size={20} className="sidebar-icon" />
-                      {!collapsed && <span className="sidebar-label">{module.label}</span>}
-                    </Link>
-                  );
-                })
-              )}
+              <PluginNav collapsed={collapsed} />
             </nav>
           )}
         </div>

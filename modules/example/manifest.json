@@ -1,0 +1,12 @@
+{
+  "name": "example",
+  "displayName": "Пример модуля",
+  "description": "Демонстрационный модуль для проверки плагинной системы.",
+  "icon": "Package",
+  "route": "/modules/example",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 99,
+  "dependencies": [],
+  "permissions": ["example:read"]
+}

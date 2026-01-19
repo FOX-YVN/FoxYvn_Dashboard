@@ -20,6 +20,47 @@ async function main() {
 
   console.log('Created user:', user.email);
 
+  // Создаем базовые права доступа
+  const permissionNames = [
+    'ops:read',
+    'ops:write',
+    'vault:read',
+    'vault:write',
+    'mind:read',
+    'mind:write',
+    'finance:read',
+    'finance:write',
+    'ai-core:read',
+    'ai-core:write',
+    'admin:full',
+  ];
+
+  for (const name of permissionNames) {
+    await prisma.permission.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+
+  // Назначаем тестовому пользователю все права
+  const allPermissions = await prisma.permission.findMany();
+  for (const permission of allPermissions) {
+    await prisma.userPermission.upsert({
+      where: {
+        userId_permissionId: {
+          userId: user.id,
+          permissionId: permission.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: user.id,
+        permissionId: permission.id,
+      },
+    });
+  }
+
   // Create some sample orders
   const orders = [
     { orderNumber: 'YVN-001', customer: 'Александр Петров', address: 'ул. Абовяна, 12', phone: '+374 91 234567', items: '2x Пицца, 1x Кола', total: 4500, status: 'pending', priority: 'high' },

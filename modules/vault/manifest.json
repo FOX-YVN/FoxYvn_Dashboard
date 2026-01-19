@@ -1,0 +1,12 @@
+{
+  "name": "vault",
+  "displayName": "Хранилище",
+  "description": "Безопасное хранилище файлов и данных",
+  "icon": "lock",
+  "route": "/modules/vault",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 2,
+  "dependencies": [],
+  "permissions": ["vault:read", "vault:write"]
+}

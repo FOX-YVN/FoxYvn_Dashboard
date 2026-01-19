@@ -22,6 +22,25 @@ model User {
   documents     Document[]
   transactions  Transaction[]
   aiChats       AiChat[]
+  permissions   UserPermission[]
+}
+
+model Permission {
+  id        String           @id @default(cuid())
+  name      String           @unique
+  createdAt DateTime         @default(now())
+  users     UserPermission[]
+}
+
+model UserPermission {
+  id           String     @id @default(cuid())
+  userId       String
+  permissionId String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, permissionId])
 }
 
 model Order {

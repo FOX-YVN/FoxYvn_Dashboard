@@ -1,0 +1,12 @@
+{
+  "name": "ai-core",
+  "displayName": "AI Ассистент",
+  "description": "Интеллектуальный ассистент для команды",
+  "icon": "bot",
+  "route": "/modules/ai-core",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 5,
+  "dependencies": [],
+  "permissions": ["ai-core:read", "ai-core:write"]
+}

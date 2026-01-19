@@ -1,0 +1,12 @@
+{
+  "name": "mind",
+  "displayName": "База знаний",
+  "description": "Документы, инструкции и база знаний команды",
+  "icon": "brain",
+  "route": "/modules/mind",
+  "version": "1.0.0",
+  "enabled": true,
+  "order": 3,
+  "dependencies": [],
+  "permissions": ["mind:read", "mind:write"]
+}
