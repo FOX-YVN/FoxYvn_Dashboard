@@ -95,47 +95,37 @@ yarn dev
 
 ---
 
-## 📱 Модули
+## 📱 Архитектура
 
-<table>
-<tr>
-<td align="center" width="14%">
-<h3>🏠</h3>
-<b>Главная</b><br>
-<code>/dashboard</code>
-</td>
-<td align="center" width="14%">
-<h3>📦</h3>
-<b>Операции</b><br>
-<code>/ops</code>
-</td>
-<td align="center" width="14%">
-<h3>💬</h3>
-<b>Сообщения</b><br>
-<code>/comms</code>
-</td>
-<td align="center" width="14%">
-<h3>🔐</h3>
-<b>Хранилище</b><br>
-<code>/vault</code>
-</td>
-<td align="center" width="14%">
-<h3>📚</h3>
-<b>База знаний</b><br>
-<code>/mind</code>
-</td>
-<td align="center" width="14%">
-<h3>💰</h3>
-<b>Финансы</b><br>
-<code>/finance</code>
-</td>
-<td align="center" width="14%">
-<h3>🤖</h3>
-<b>AI</b><br>
-<code>/ai-core</code>
-</td>
-</tr>
-</table>
+### Заводское состояние Dashboard
+
+| Раздел | Описание |
+|--------|----------|
+| 🏠 **Главная** | `/dashboard` — обзор системы |
+| 💬 **Сообщения** | `/comms` — внутренняя переписка |
+| ⚙️ **Настройки** | `/settings` — управление аккаунтом |
+| 📦 **Модули** | Подключаемые расширения |
+
+### Модульная система
+
+Модули — отдельные npm-пакеты, которые можно подключать к Dashboard:
+
+```
+📁 modules/           ← Хранилище модулей
+   📦 ops/            ← Операции
+   📦 vault/          ← Хранилище
+   📦 mind/           ← База знаний
+   📦 finance/        ← Финансы
+   📦 ai-core/        ← AI Ассистент
+```
+
+### PWA + Мобильная версия
+
+- 📱 Адаптивный дизайн для телефонов и планшетов
+- 🍔 Мобильный сайдбар с бургер-меню
+- 🔻 Нижняя навигация в стиле Apple Music
+- 🪟 Glassmorphism эффекты (blur, saturation)
+- ⬇️ Устанавливается как приложение (PWA)
 
 ---
 

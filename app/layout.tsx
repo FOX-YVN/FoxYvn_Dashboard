@@ -7,14 +7,28 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
   title: 'FOX YVN | Command Center',
-  description: 'VSCodium-based command center for delivery business in Yerevan',
+  description: 'Панель управления бизнесом',
+  manifest: '/manifest.json',
+  themeColor: '#E85D04',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'FOX YVN',
+  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
+    apple: '/icons/icon-192x192.png',
   },
   openGraph: {
     title: 'FOX YVN | Command Center',
-    description: 'VSCodium-based command center for delivery business in Yerevan',
+    description: 'Панель управления бизнесом',
     images: ['/og-image.png'],
   },
 };
@@ -28,9 +42,23 @@ export default function RootLayout({
     <html lang="ru" suppressHydrationWarning>
       <head>
         <script src="https://apps.abacus.ai/chatllm/appllm-lib.js"></script>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-dark-primary text-white antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
