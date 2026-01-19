@@ -1,4 +1,5 @@
 import type { PluginEvent } from './types';
+import { logger } from '@/lib/logger';
 
 const LOG_PREFIX = '[EventBus]';
 const MAX_HISTORY = 100;
@@ -80,7 +81,7 @@ export class EventBus {
       this.history.splice(0, this.history.length - MAX_HISTORY);
     }
 
-    console.log(LOG_PREFIX, `Published: ${event.type} from ${event.source}`);
+    logger.info(LOG_PREFIX, `Published: ${event.type} from ${event.source}`);
 
     const matchedHandlers: Array<{
       handler: EventHandler;
@@ -94,7 +95,7 @@ export class EventBus {
       });
     }
 
-    console.log(
+    logger.info(
       LOG_PREFIX,
       `Delivered to ${matchedHandlers.length} subscribers:`,
       matchedHandlers.map((entry) => entry.subscriberId ?? 'anonymous').join(', '),
@@ -110,13 +111,13 @@ export class EventBus {
         ),
       ])
         .then(() => {
-          console.log(
+          logger.info(
             LOG_PREFIX,
             `Handler ${subscriberId ?? 'anonymous'} completed in ${Date.now() - startedAt}ms`,
           );
         })
         .catch((error) => {
-          console.warn(
+          logger.warn(
             LOG_PREFIX,
             `Handler ${subscriberId ?? 'anonymous'} failed for ${event.type}`,
             error,

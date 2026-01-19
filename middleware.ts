@@ -1,5 +1,6 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 export default withAuth(
   function middleware(req) {
@@ -9,6 +10,18 @@ export default withAuth(
     // Пропустить публичные роуты
     if (path.startsWith('/api/auth/')) {
       return NextResponse.next();
+    }
+
+    if (path.startsWith('/api/')) {
+      const forwarded = req.headers.get('x-forwarded-for') || '';
+      const ip = forwarded.split(',')[0]?.trim() || req.ip || 'unknown';
+      const { success } = rateLimit(ip, 100, 60000);
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Too many requests' },
+          { status: 429, headers: { 'Retry-After': '60' } },
+        );
+      }
     }
 
     // Защита API

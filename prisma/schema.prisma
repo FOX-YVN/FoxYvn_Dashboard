@@ -59,6 +59,10 @@ model Order {
   updatedAt   DateTime @updatedAt
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
 }
 
 model Message {
@@ -72,6 +76,10 @@ model Message {
   createdAt   DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
+  @@index([chatId])
+  @@index([platform, createdAt])
+  @@index([userId])
 }
 
 model VaultFile {

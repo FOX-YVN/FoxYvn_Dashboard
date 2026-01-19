@@ -3,6 +3,7 @@ import path from 'path';
 import { z } from 'zod';
 import type { PluginClientSnapshot, PluginManifest, PluginModule, PluginNavItem } from './types';
 import { pluginRegistry } from './plugin-registry';
+import { logger } from '@/lib/logger';
 
 const LOG_PREFIX = '[PluginSystem]';
 
@@ -26,7 +27,7 @@ let cacheDirty = true;
 let watcherReady = false;
 
 function logError(message: string, error: unknown): void {
-  console.error(LOG_PREFIX, message, error instanceof Error ? error.message : error);
+  logger.error(LOG_PREFIX, message, error instanceof Error ? error.message : error);
 }
 
 function isPluginModule(value: unknown): value is PluginModule {
@@ -50,10 +51,10 @@ async function ensureWatcher(): Promise<void> {
     const watcher = fs.watch(modulesDir, { recursive: true });
     watcher.on('change', () => {
       cacheDirty = true;
-      console.log(LOG_PREFIX, 'Изменения в модулях: кэш сброшен');
+      logger.info(LOG_PREFIX, 'Изменения в модулях: кэш сброшен');
     });
   } catch (error) {
-    console.warn(LOG_PREFIX, 'Не удалось включить hot-reload модулей', error);
+    logger.warn(LOG_PREFIX, 'Не удалось включить hot-reload модулей', error);
   }
 }
 
@@ -76,6 +77,28 @@ async function readManifest(moduleName: string): Promise<PluginManifest | null> 
 }
 
 async function importPlugin(moduleName: string): Promise<PluginModule | null> {
+  if (
+    moduleName.includes('..') ||
+    moduleName.includes('/') ||
+    moduleName.includes('\\')
+  ) {
+    logger.warn(
+      LOG_PREFIX,
+      'Invalid module name (path traversal attempt):',
+      moduleName,
+    );
+    return null;
+  }
+
+  if (!/^[a-z0-9-_]+$/i.test(moduleName)) {
+    logger.warn(
+      LOG_PREFIX,
+      'Invalid module name (invalid characters):',
+      moduleName,
+    );
+    return null;
+  }
+
   try {
     const modulePath = `@/modules/${moduleName}`;
     const imported = (await import(modulePath)) as Record<string, unknown>;
@@ -85,7 +108,7 @@ async function importPlugin(moduleName: string): Promise<PluginModule | null> {
       Object.values(imported).find((value) => isPluginModule(value));
 
     if (!isPluginModule(candidate)) {
-      console.warn(LOG_PREFIX, `Модуль ${moduleName} не соответствует интерфейсу PluginModule`);
+      logger.warn(LOG_PREFIX, `Модуль ${moduleName} не соответствует интерфейсу PluginModule`);
       return null;
     }
 
