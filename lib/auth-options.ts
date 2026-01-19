@@ -69,11 +69,12 @@ export const authOptions: NextAuthOptions = {
               (entry) => entry.permission.name
             ) ?? [];
           token.permissions = permissions;
-          console.log(
-            "[Auth]",
-            `Cached permissions in JWT for ${token.email}:`,
-            permissions
-          );
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              "[Auth]",
+              `Permissions cached for ${token.email}: ${permissions.length} permissions`
+            );
+          }
         } else {
           token.permissions = [];
         }

@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { signupSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name } = body;
+    const parsed = signupSchema.safeParse(body);
 
-    if (!email || !password) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Invalid payload", details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       );
     }
+
+    const { email, password, name } = parsed.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },

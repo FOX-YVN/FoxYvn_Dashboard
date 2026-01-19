@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
+import { createOrderSchema } from '@/lib/validation';
+import { hasPermission } from '@/core/permissions';
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userPermissions = session.user.permissions ?? [];
+    if (!hasPermission(userPermissions, 'ops:read')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const orders = await prisma.order.findMany({
@@ -28,9 +34,20 @@ export async function POST(request: Request) {
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const userPermissions = session.user.permissions ?? [];
+    if (!hasPermission(userPermissions, 'ops:write')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await request.json();
-    const { customer, address, phone, items, total, priority } = body;
+    const parsed = createOrderSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid payload', details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      );
+    }
+    const { customer, address, phone, items, total, priority } = parsed.data;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -50,9 +67,9 @@ export async function POST(request: Request) {
         address,
         phone,
         items,
-        total: total || 0,
+        total,
         status: 'pending',
-        priority: priority || 'normal',
+        priority,
         userId: user.id,
       },
     });

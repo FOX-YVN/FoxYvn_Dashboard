@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
+import { useEvent } from '@/hooks/use-event-bus';
 import {
   Send,
   Download,
@@ -39,6 +40,15 @@ export default function FinancePage() {
   const [showSendModal, setShowSendModal] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  useEvent<{ orderId: string; amount: number }>('order.created', (payload) => {
+    console.log('[Finance] Получен новый заказ:', payload);
+    toast.info(`Финансы: новый заказ ${payload.orderId} на ${payload.amount}₽`);
+  }, [], 'finance-module');
+
+  useEvent('order.*', (payload) => {
+    console.log('[Finance] Событие заказа:', payload);
+  }, [], 'finance-module');
 
   useEffect(() => {
     setMounted(true);
